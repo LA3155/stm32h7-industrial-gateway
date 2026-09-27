@@ -1,0 +1,39 @@
+# ==========================================
+# 编译产物与中间缓存 (Build Artifacts)
+# ==========================================
+build/
+Build/
+**/build/
+**/Build/
+cmake-build-*/
+**/.cache/
+
+# 二进制固件与目标文件
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.obj
+*.d
+*.a
+*.lib
+
+# CMake 与 Ninja 临时生成文件
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+.ninja_*
+compile_commands.json
+
+# ==========================================
+# 调试脚本与 Python 测试缓存
+# ==========================================
+__pycache__/
+*.pyc
+*.pyo
+*.pcapng
+scratch/
+
