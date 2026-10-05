@@ -70,7 +70,7 @@
 /*----- Value in opt.h for LWIP_NETIF_LINK_CALLBACK: 0 -----*/
 #define LWIP_NETIF_LINK_CALLBACK 1
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
-#define TCPIP_THREAD_STACKSIZE 1024
+#define TCPIP_THREAD_STACKSIZE 4096
 /*----- Value in opt.h for TCPIP_THREAD_PRIO: 1 -----*/
 #define TCPIP_THREAD_PRIO 24
 /*----- Value in opt.h for TCPIP_MBOX_SIZE: 0 -----*/
@@ -111,7 +111,12 @@
 #define CHECKSUM_CHECK_ICMP6 0
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-
+// 1. 扩大堆内存至 16KB，足以容纳多个满载 1500 字节以太网帧的收发拼装
+#undef MEM_SIZE
+#define MEM_SIZE (16 * 1024)
+// 2. 将堆起始指针后移至 0x30006000，彻底与 RX_POOL (截至 0x30004A83) 隔离
+#undef LWIP_RAM_HEAP_POINTER
+#define LWIP_RAM_HEAP_POINTER 0x30006000
 /* USER CODE END 1 */
 
 #ifdef __cplusplus

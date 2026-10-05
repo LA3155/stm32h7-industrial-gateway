@@ -143,9 +143,11 @@ static int32_t handle_modbus_to_can(const uint8_t *tcp_frame, size_t tcp_len,
 void gateway_regs_init(void)
 {
     // 初始化网关基础运行参数
-    g_gateway_regs[0] = 0;      // 系统运行时间
-    g_gateway_regs[1] = 0x0100; // 固件版本号: V1.0.0
-    g_gateway_regs[2] = 0;      // 通信成功计数
+    g_gateway_regs[0] = 0;      // 系统运行时间低 16 位
+    g_gateway_regs[1] = 0;      // 系统运行时间高 16 位
+    g_gateway_regs[2] = 0x0100; // 固件版本: V1.0.0
+    g_gateway_regs[3] = 0;      // 以太网链路状态 (0:Down, 1:Up)
+    g_gateway_regs[5] = 10;     // RS-485 默认轮询周期: 10 秒 (上位机可写 06 修改)
     
     // 初始化 CAN 设备默认模拟镜像
     g_gateway_regs[100] = 480;  // 模拟 BMS 电压 48.0V
@@ -210,7 +212,15 @@ int32_t protocol_router_dispatch(const uint8_t *tcp_frame, size_t tcp_len,
     // 写单个寄存器 (FC 0x06) 或 写多个寄存器 (FC 0x10)：根据地址分流下发总线
     else if(func_code == 0x06 || func_code == 0x10){
         uint16_t reg_addr = (uint16_t)((tcp_frame[8] << 8) | tcp_frame[9]);
-        if (reg_addr >= 100 && reg_addr <= 199) {
+
+        if (reg_addr < 100 && func_code == 0x06) {
+            uint16_t reg_val = (uint16_t)((tcp_frame[10] << 8) | tcp_frame[11]);
+            g_gateway_regs[reg_addr] = reg_val; // 直接更新参数
+            memcpy(out_resp, tcp_frame, 12);     // 原样回显应答
+            *out_resp_len = 12;
+            return ROUTER_OK;
+        }
+        else if (reg_addr >= 100 && reg_addr <= 199) {
             return handle_modbus_to_can(tcp_frame, tcp_len, out_resp, out_resp_len);
         } else if (reg_addr >= 200 && reg_addr <= 299) {
             return handle_modbus_to_rs485(tcp_frame, tcp_len, out_resp, out_resp_len);

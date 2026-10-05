@@ -15,6 +15,7 @@ typedef struct {
 
 // 供全局任务跨线程通信的写指令队列句柄
 extern osMessageQueueId_t qFieldbusWriteHandle;
+extern osMessageQueueId_t qRs485RxHandle;
 
 void task_init();
 

@@ -60,8 +60,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define RS485_DIR_Pin GPIO_PIN_8
-#define RS485_DIR_GPIO_Port GPIOA
+#define RS485_DIR_Pin GPIO_PIN_14
+#define RS485_DIR_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
 

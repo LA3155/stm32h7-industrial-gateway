@@ -240,7 +240,25 @@ SECTIONS
     . = ALIGN(8);
   } >DTCMRAM
 
+  /* 用户自定义 D3 域 SRAM4 内存段 (BDMA 专用) */
+  .ram_d3 (NOLOAD) :
+  {
+    . = ALIGN(32);
+    *(.ram_d3)
+    *(.ram_d3*)
+    . = ALIGN(32);
+  } >RAM_D3
 
+    /* 以太网专用描述符与缓冲池内存段 (映射到 D2 SRAM 0x30000000) */
+  .lwip_sec (NOLOAD) :
+  {
+    . = ABSOLUTE(0x30000000);
+    *(.RxDecripSection)
+    . = ABSOLUTE(0x30000080);
+    *(.TxDecripSection)
+    . = ABSOLUTE(0x30000100);
+    *(.Rx_PoolSection)
+  } >RAM_D2
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
